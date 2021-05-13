@@ -1,4 +1,4 @@
-## null
+## null [![build](https://github.com/zero-pkg/null/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/zero-pkg/null/actions/workflows/ci.yml)
 
 null is a library with reasonable options for dealing with nullable SQL and JSON values
 
