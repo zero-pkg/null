@@ -177,7 +177,7 @@ func TestTimeScan(t *testing.T) {
 
 func TestTimeValue(t *testing.T) {
 	ti := TimeFrom(timeValue1)
-	v, err := ti.Value()
+	_, err := ti.Value()
 	maybePanic(err)
 	if ti.Time != timeValue1 {
 		t.Errorf("bad time.Time value: %v ≠ %v", ti.Time, timeValue1)
@@ -185,7 +185,7 @@ func TestTimeValue(t *testing.T) {
 
 	var nt time.Time
 	zero := TimeFrom(nt)
-	v, err = zero.Value()
+	v, err := zero.Value()
 	maybePanic(err)
 	if v != nil {
 		t.Errorf("bad %s time.Time value: %v ≠ %v", "zero", v, nil)
