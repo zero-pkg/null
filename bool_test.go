@@ -33,30 +33,37 @@ func TestBoolFromPtr(t *testing.T) {
 
 func TestUnmarshalBool(t *testing.T) {
 	var b Bool
+
 	err := json.Unmarshal(boolJSON, &b)
 	maybePanic(err)
 	assertBool(t, b, "bool json")
 
 	var nb Bool
+
 	err = json.Unmarshal(nullBoolJSON, &nb)
 	if err == nil {
 		panic("err should not be nil")
 	}
 
 	var null Bool
+
 	err = json.Unmarshal(nullJSON, &null)
 	maybePanic(err)
 	assertNullBool(t, null, "null json")
 
 	var badType Bool
+
 	err = json.Unmarshal(intJSON, &badType)
 	if err == nil {
 		panic("err should not be nil")
 	}
+
 	assertNullBool(t, badType, "wrong type json")
 
 	var invalid Bool
+
 	err = invalid.UnmarshalJSON(invalidJSON)
+
 	var syntaxError *json.SyntaxError
 	if !errors.As(err, &syntaxError) {
 		t.Errorf("expected wrapped json.SyntaxError, not %T", err)
@@ -65,30 +72,36 @@ func TestUnmarshalBool(t *testing.T) {
 
 func TestTextUnmarshalBool(t *testing.T) {
 	var b Bool
+
 	err := b.UnmarshalText([]byte("true"))
 	maybePanic(err)
 	assertBool(t, b, "UnmarshalText() bool")
 
 	var zero Bool
+
 	err = zero.UnmarshalText([]byte("false"))
 	maybePanic(err)
 	assertFalseBool(t, zero, "UnmarshalText() false")
 
 	var blank Bool
+
 	err = blank.UnmarshalText([]byte(""))
 	maybePanic(err)
 	assertNullBool(t, blank, "UnmarshalText() empty bool")
 
 	var null Bool
+
 	err = null.UnmarshalText([]byte("null"))
 	maybePanic(err)
 	assertNullBool(t, null, `UnmarshalText() "null"`)
 
 	var invalid Bool
+
 	err = invalid.UnmarshalText([]byte(":D"))
 	if err == nil {
 		panic("err should not be nil")
 	}
+
 	assertNullBool(t, invalid, "invalid json")
 }
 
@@ -130,12 +143,14 @@ func TestMarshalBoolText(t *testing.T) {
 
 func TestBoolPointer(t *testing.T) {
 	b := BoolFrom(true)
+
 	ptr := b.Ptr()
 	if *ptr != true {
 		t.Errorf("bad %s bool: %#v ≠ %v\n", "pointer", ptr, true)
 	}
 
 	null := NewBool(false, false)
+
 	ptr = null.Ptr()
 	if ptr != nil {
 		t.Errorf("bad %s bool: %#v ≠ %s\n", "nil pointer", ptr, "nil")
@@ -168,11 +183,13 @@ func TestBoolSetValid(t *testing.T) {
 
 func TestBoolScan(t *testing.T) {
 	var b Bool
+
 	err := b.Scan(true)
 	maybePanic(err)
 	assertBool(t, b, "scanned bool")
 
 	var null Bool
+
 	err = null.Scan(nil)
 	maybePanic(err)
 	assertNullBool(t, null, "scanned null")
@@ -220,6 +237,7 @@ func assertBool(t *testing.T, b Bool, from string) {
 	if b.Bool != true {
 		t.Errorf("bad %s bool: %v ≠ %v\n", from, b.Bool, true)
 	}
+
 	if !b.Valid {
 		t.Error(from, "is invalid, but should be valid")
 	}
@@ -229,6 +247,7 @@ func assertFalseBool(t *testing.T, b Bool, from string) {
 	if b.Bool != false {
 		t.Errorf("bad %s bool: %v ≠ %v\n", from, b.Bool, false)
 	}
+
 	if !b.Valid {
 		t.Error(from, "is invalid, but should be valid")
 	}
@@ -242,6 +261,7 @@ func assertNullBool(t *testing.T, b Bool, from string) {
 
 func assertBoolEqualIsTrue(t *testing.T, a, b Bool) {
 	t.Helper()
+
 	if !a.Equal(b) {
 		t.Errorf("Equal() of Bool{%t, Valid:%t} and Bool{%t, Valid:%t} should return true", a.Bool, a.Valid, b.Bool, b.Valid)
 	}
@@ -249,6 +269,7 @@ func assertBoolEqualIsTrue(t *testing.T, a, b Bool) {
 
 func assertBoolEqualIsFalse(t *testing.T, a, b Bool) {
 	t.Helper()
+
 	if a.Equal(b) {
 		t.Errorf("Equal() of Bool{%t, Valid:%t} and Bool{%t, Valid:%t} should return false", a.Bool, a.Valid, b.Bool, b.Valid)
 	}

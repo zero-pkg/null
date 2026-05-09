@@ -30,6 +30,7 @@ func StringFromPtr(s *string) String {
 	if s == nil {
 		return NewString("", false)
 	}
+
 	return NewString(*s, true)
 }
 
@@ -38,6 +39,7 @@ func (s String) ValueOrZero() string {
 	if !s.Valid {
 		return ""
 	}
+
 	return s.String
 }
 
@@ -64,6 +66,7 @@ func (s *String) UnmarshalJSON(data []byte) error {
 	}
 
 	s.Valid = true
+
 	return nil
 }
 
@@ -73,6 +76,7 @@ func (s String) MarshalJSON() ([]byte, error) {
 	if !s.Valid {
 		return []byte("null"), nil
 	}
+
 	return json.Marshal(s.String)
 }
 
@@ -82,6 +86,7 @@ func (s String) MarshalText() ([]byte, error) {
 	if !s.Valid {
 		return []byte{}, nil
 	}
+
 	return []byte(s.String), nil
 }
 
@@ -90,6 +95,7 @@ func (s String) MarshalText() ([]byte, error) {
 func (s *String) UnmarshalText(text []byte) error {
 	s.String = string(text)
 	s.Valid = s.String != ""
+
 	return nil
 }
 
@@ -104,6 +110,7 @@ func (s String) Ptr() *string {
 	if !s.Valid {
 		return nil
 	}
+
 	return &s.String
 }
 

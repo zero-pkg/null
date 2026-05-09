@@ -36,7 +36,9 @@ func IntFromPtr(i *int64) Int {
 	if i == nil {
 		return NewInt(0, false)
 	}
+
 	n := NewInt(*i, true)
+
 	return n
 }
 
@@ -45,6 +47,7 @@ func (i Int) ValueOrZero() int64 {
 	if !i.Valid {
 		return 0
 	}
+
 	return i.Int64
 }
 
@@ -64,22 +67,28 @@ func (i *Int) UnmarshalJSON(data []byte) error {
 			if typeError.Value != "string" {
 				return fmt.Errorf("zero: JSON input is invalid type (need int or string): %w", err)
 			}
+
 			var str string
 			if err := json.Unmarshal(data, &str); err != nil {
 				return fmt.Errorf("zero: couldn't unmarshal number string: %w", err)
 			}
+
 			n, err := strconv.ParseInt(str, 10, 64)
 			if err != nil {
 				return fmt.Errorf("zero: couldn't convert string to int: %w", err)
 			}
+
 			i.Int64 = n
 			i.Valid = n != 0
+
 			return nil
 		}
+
 		return fmt.Errorf("zero: couldn't unmarshal JSON: %w", err)
 	}
 
 	i.Valid = i.Int64 != 0
+
 	return nil
 }
 
@@ -92,12 +101,16 @@ func (i *Int) UnmarshalText(text []byte) error {
 		i.Valid = false
 		return nil
 	}
+
 	var err error
+
 	i.Int64, err = strconv.ParseInt(string(text), 10, 64)
 	if err != nil {
 		return fmt.Errorf("zero: couldn't unmarshal text: %w", err)
 	}
+
 	i.Valid = i.Int64 != 0
+
 	return err
 }
 
@@ -108,6 +121,7 @@ func (i Int) MarshalJSON() ([]byte, error) {
 	if !i.Valid {
 		n = 0
 	}
+
 	return []byte(strconv.FormatInt(n, 10)), nil
 }
 
@@ -118,6 +132,7 @@ func (i Int) MarshalText() ([]byte, error) {
 	if !i.Valid {
 		n = 0
 	}
+
 	return []byte(strconv.FormatInt(n, 10)), nil
 }
 
@@ -132,6 +147,7 @@ func (i Int) Ptr() *int64 {
 	if !i.Valid {
 		return nil
 	}
+
 	return &i.Int64
 }
 

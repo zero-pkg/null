@@ -20,6 +20,7 @@ func (t Time) Value() (driver.Value, error) {
 	if !t.Valid {
 		return nil, nil
 	}
+
 	return t.Time, nil
 }
 
@@ -43,6 +44,7 @@ func TimeFromPtr(t *time.Time) Time {
 	if t == nil {
 		return NewTime(time.Time{}, false)
 	}
+
 	return NewTime(*t, true)
 }
 
@@ -51,6 +53,7 @@ func (t Time) ValueOrZero() time.Time {
 	if !t.Valid {
 		return time.Time{}
 	}
+
 	return t.Time
 }
 
@@ -60,6 +63,7 @@ func (t Time) MarshalJSON() ([]byte, error) {
 	if !t.Valid {
 		return []byte("null"), nil
 	}
+
 	return t.Time.MarshalJSON()
 }
 
@@ -76,6 +80,7 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 	}
 
 	t.Valid = true
+
 	return nil
 }
 
@@ -85,6 +90,7 @@ func (t Time) MarshalText() ([]byte, error) {
 	if !t.Valid {
 		return []byte{}, nil
 	}
+
 	return t.Time.MarshalText()
 }
 
@@ -98,10 +104,13 @@ func (t *Time) UnmarshalText(text []byte) error {
 		t.Valid = false
 		return nil
 	}
+
 	if err := t.Time.UnmarshalText(text); err != nil {
 		return fmt.Errorf("null: couldn't unmarshal text: %w", err)
 	}
+
 	t.Valid = true
+
 	return nil
 }
 
@@ -116,6 +125,7 @@ func (t Time) Ptr() *time.Time {
 	if !t.Valid {
 		return nil
 	}
+
 	return &t.Time
 }
 
@@ -136,5 +146,5 @@ func (t Time) Equal(other Time) bool {
 // ExactEqual returns false for times that are in different locations or
 // have a different monotonic clock reading.
 func (t Time) ExactEqual(other Time) bool {
-	return t.Valid == other.Valid && (!t.Valid || t.Time == other.Time)
+	return t.Valid == other.Valid && (!t.Valid || t.Time.Equal(other.Time))
 }

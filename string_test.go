@@ -37,51 +37,63 @@ func TestStringFromPtr(t *testing.T) {
 
 func TestUnmarshalString(t *testing.T) {
 	var str String
+
 	err := json.Unmarshal(stringJSON, &str)
 	maybePanic(err)
 	assertStr(t, str, "string json")
 
 	var ns String
+
 	err = json.Unmarshal(nullStringJSON, &ns)
 	if err == nil {
 		panic("err should not be nil")
 	}
 
 	var blank String
+
 	err = json.Unmarshal(blankStringJSON, &blank)
 	maybePanic(err)
+
 	if !blank.Valid {
 		t.Error("blank string should be valid")
 	}
 
 	var null String
+
 	err = json.Unmarshal(nullJSON, &null)
 	maybePanic(err)
 	assertNullStr(t, null, "null json")
 
 	var badType String
+
 	err = json.Unmarshal(boolJSON, &badType)
 	if err == nil {
 		panic("err should not be nil")
 	}
+
 	assertNullStr(t, badType, "wrong type json")
 
 	var invalid String
+
 	err = invalid.UnmarshalJSON(invalidJSON)
+
 	var syntaxError *json.SyntaxError
 	if !errors.As(err, &syntaxError) {
 		t.Errorf("expected wrapped json.SyntaxError, not %T", err)
 	}
+
 	assertNullStr(t, invalid, "invalid json")
 }
 
 func TestTextUnmarshalString(t *testing.T) {
 	var str String
+
 	err := str.UnmarshalText([]byte("test"))
 	maybePanic(err)
 	assertStr(t, str, "UnmarshalText() string")
 
 	var null String
+
 	err = null.UnmarshalText([]byte(""))
 	maybePanic(err)
 	assertNullStr(t, null, "UnmarshalText() empty string")
@@ -116,12 +128,14 @@ func TestMarshalString(t *testing.T) {
 
 func TestStringPointer(t *testing.T) {
 	str := StringFrom("test")
+
 	ptr := str.Ptr()
 	if *ptr != "test" {
 		t.Errorf("bad %s string: %#v ≠ %s\n", "pointer", ptr, "test")
 	}
 
 	null := NewString("", false)
+
 	ptr = null.Ptr()
 	if ptr != nil {
 		t.Errorf("bad %s string: %#v ≠ %s\n", "nil pointer", ptr, "nil")
@@ -159,11 +173,13 @@ func TestStringSetValid(t *testing.T) {
 
 func TestStringScan(t *testing.T) {
 	var str String
+
 	err := str.Scan("test")
 	maybePanic(err)
 	assertStr(t, str, "scanned string")
 
 	var null String
+
 	err = null.Scan(nil)
 	maybePanic(err)
 	assertNullStr(t, null, "scanned null")
@@ -217,6 +233,7 @@ func assertStr(t *testing.T, s String, from string) {
 	if s.String != "test" {
 		t.Errorf("bad %s string: %s ≠ %s\n", from, s.String, "test")
 	}
+
 	if !s.Valid {
 		t.Error(from, "is invalid, but should be valid")
 	}
@@ -236,6 +253,7 @@ func assertJSONEquals(t *testing.T, data []byte, cmp string, from string) {
 
 func assertStringEqualIsTrue(t *testing.T, a, b String) {
 	t.Helper()
+
 	if !a.Equal(b) {
 		t.Errorf("Equal() of String{\"%v\", Valid:%t} and String{\"%v\", Valid:%t} should return true", a.String, a.Valid, b.String, b.Valid)
 	}
@@ -243,6 +261,7 @@ func assertStringEqualIsTrue(t *testing.T, a, b String) {
 
 func assertStringEqualIsFalse(t *testing.T, a, b String) {
 	t.Helper()
+
 	if a.Equal(b) {
 		t.Errorf("Equal() of String{\"%v\", Valid:%t} and String{\"%v\", Valid:%t} should return false", a.String, a.Valid, b.String, b.Valid)
 	}

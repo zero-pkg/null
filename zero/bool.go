@@ -35,6 +35,7 @@ func BoolFromPtr(b *bool) Bool {
 	if b == nil {
 		return NewBool(false, false)
 	}
+
 	return NewBool(*b, true)
 }
 
@@ -56,6 +57,7 @@ func (b *Bool) UnmarshalJSON(data []byte) error {
 	}
 
 	b.Valid = b.Bool
+
 	return nil
 }
 
@@ -71,12 +73,15 @@ func (b *Bool) UnmarshalText(text []byte) error {
 	case "true":
 		b.Bool = true
 		b.Valid = true
+
 		return nil
 	case "false":
 		b.Bool = false
 		b.Valid = false
+
 		return nil
 	}
+
 	return errors.New("invalid input:" + str)
 }
 
@@ -86,6 +91,7 @@ func (b Bool) MarshalJSON() ([]byte, error) {
 	if !b.Valid || !b.Bool {
 		return []byte("false"), nil
 	}
+
 	return []byte("true"), nil
 }
 
@@ -95,6 +101,7 @@ func (b Bool) MarshalText() ([]byte, error) {
 	if !b.Valid || !b.Bool {
 		return []byte("false"), nil
 	}
+
 	return []byte("true"), nil
 }
 
@@ -109,6 +116,7 @@ func (b Bool) Ptr() *bool {
 	if !b.Valid {
 		return nil
 	}
+
 	return &b.Bool
 }
 

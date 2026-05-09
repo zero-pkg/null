@@ -21,6 +21,7 @@ func (t Timestamp) Value() (driver.Value, error) {
 	if !t.Valid {
 		return nil, nil
 	}
+
 	return t.Time, nil
 }
 
@@ -44,6 +45,7 @@ func TimestampFromPtr(t *time.Time) Timestamp {
 	if t == nil {
 		return NewTimestamp(time.Time{}, false)
 	}
+
 	return NewTimestamp(*t, true)
 }
 
@@ -52,6 +54,7 @@ func (t Timestamp) ValueOrZero() time.Time {
 	if !t.Valid {
 		return time.Time{}
 	}
+
 	return t.Time
 }
 
@@ -61,6 +64,7 @@ func (t Timestamp) MarshalJSON() ([]byte, error) {
 	if !t.Valid {
 		return []byte("null"), nil
 	}
+
 	return []byte(strconv.FormatInt(t.Time.Unix(), 10)), nil
 }
 
@@ -71,12 +75,15 @@ func (t *Timestamp) UnmarshalJSON(data []byte) error {
 		t.Valid = false
 		return nil
 	}
+
 	var v int64
 	if err := json.Unmarshal(data, &v); err != nil {
 		return fmt.Errorf("null: couldn't unmarshal JSON: %w", err)
 	}
+
 	t.Time = time.Unix(v, 0)
 	t.Valid = true
+
 	return nil
 }
 
@@ -86,6 +93,7 @@ func (t Timestamp) MarshalText() ([]byte, error) {
 	if !t.Valid {
 		return []byte{}, nil
 	}
+
 	return []byte(strconv.FormatInt(t.Time.Unix(), 10)), nil
 }
 
@@ -98,12 +106,15 @@ func (t *Timestamp) UnmarshalText(text []byte) error {
 		t.Valid = false
 		return nil
 	}
+
 	v, err := strconv.ParseInt(str, 0, 64)
 	if err != nil {
 		return fmt.Errorf("null: couldn't unmarshal text: %w", err)
 	}
+
 	t.Time = time.Unix(v, 0)
 	t.Valid = true
+
 	return nil
 }
 
@@ -118,6 +129,7 @@ func (t Timestamp) Ptr() *time.Time {
 	if !t.Valid {
 		return nil
 	}
+
 	return &t.Time
 }
 
@@ -138,5 +150,5 @@ func (t Timestamp) Equal(other Timestamp) bool {
 // ExactEqual returns false for times that are in different locations or
 // have a different monotonic clock reading.
 func (t Timestamp) ExactEqual(other Timestamp) bool {
-	return t.Valid == other.Valid && (!t.Valid || t.Time == other.Time)
+	return t.Valid == other.Valid && (!t.Valid || t.Time.Equal(other.Time))
 }

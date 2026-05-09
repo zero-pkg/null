@@ -1,69 +1,140 @@
-linters-settings:
-  golint:
-    min-confidence: 0.8
-  gocyclo:
-    min-complexity: 15
-  maligned:
-    suggest-new: true
-  dupl:
-    threshold: 100
-  goconst:
-    min-len: 2
-    min-occurrences: 2
-  misspell:
-    locale: US
-  lll:
-    line-length: 140
-  gocritic:
-    enabled-tags:
-      - performance
-      - style
-      - experimental
-    disabled-checks:
-      - wrapperFunc
-      - hugeParam
-      - rangeValCopy
+version: "2"
 
 linters:
-  disable-all: true
+  default: none
   enable:
-    - megacheck
-    - golint
-    - govet
-    - unconvert
-    - megacheck
-    - structcheck
-    - gas
-    - gocyclo
-    - misspell
-    - unparam
-    - varcheck
-    - deadcode
-    - typecheck
-    - ineffassign
-    - varcheck
-    - stylecheck
+    - asciicheck
+    - bodyclose
+    - dogsled
+    - errcheck
+    - exhaustive
+    - funlen
     - gochecknoinits
-    - golint
+    - gocritic
+    - gocyclo
+    - goheader
+    - mnd
+    - goprintffuncname
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
     - nakedret
-    - gosimple
+    - noctx
+    - nolintlint
     - prealloc
+    - revive
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - unconvert
+    - unused
+    - whitespace
+    - wsl_v5
 
-  fast: false
+  settings:
+    mnd:
+      checks:
+        - condition
+        - operation
+        - return
+    revive:
+      rules:
+        - name: comment-spacings
+          arguments:
+            - nolint
+          severity: warning
+          disabled: false
+        - name: constant-logical-expr
+          severity: warning
+          disabled: false
+        - name: datarace
+          severity: warning
+          disabled: false
+        - name: defer
+          severity: warning
+          disabled: false
+        - name: duplicated-imports
+          severity: warning
+          disabled: false
+        - name: early-return
+          severity: warning
+          disabled: false
+        - name: error-naming
+          severity: warning
+          disabled: false
+        - name: error-strings
+          severity: warning
+          disabled: false
+        - name: exported
+          severity: warning
+          disabled: false
+        - name: optimize-operands-order
+          severity: warning
+          disabled: false
+        - name: package-comments
+          disabled: true
+        - name: range-val-in-closure
+          severity: warning
+          disabled: false
+        - name: range-val-address
+          severity: warning
+          disabled: false
+        - name: superfluous-else
+          severity: warning
+          disabled: false
+        - name: time-equal
+          severity: warning
+          disabled: false
+        - name: unused-parameter
+          severity: warning
+          disabled: false
+        - name: use-any
+          severity: warning
+          disabled: false
+        - name: waitgroup-by-value
+          severity: warning
+          disabled: false
 
+    staticcheck:
+      checks:
+        - "all"
+        - "-ST1000"
+        - "-ST1005"
 
-run:
-  # modules-download-mode: vendor
-  skip-dirs:
-    - vendor
-  concurrency: 4
+  exclusions:
+    generated: lax
+    rules:
+      - path: _test\.go
+        linters:
+          - errcheck
+          - funlen
+          - goconst
+          - gosec
+          - noctx
+          - prealloc
+      - path: _test\.go
+        text: unused-parameter
+
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - localmodule
+
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 
 issues:
-  exclude-rules:
-    - text: "weak cryptographic primitive"
-      linters:
-        - gosec
-  exclude-use-default: false
-
-service:
-  golangci-lint-version: 1.31.x
+  fix: true

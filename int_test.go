@@ -36,50 +36,61 @@ func TestIntFromPtr(t *testing.T) {
 
 func TestUnmarshalInt(t *testing.T) {
 	var i Int
+
 	err := json.Unmarshal(intJSON, &i)
 	maybePanic(err)
 	assertInt(t, i, "int json")
 
 	var si Int
+
 	err = json.Unmarshal(intStringJSON, &si)
 	maybePanic(err)
 	assertInt(t, si, "int string json")
 
 	var ni Int
+
 	err = json.Unmarshal(nullIntJSON, &ni)
 	if err == nil {
 		panic("err should not be nill")
 	}
 
 	var bi Int
+
 	err = json.Unmarshal(floatBlankJSON, &bi)
 	if err == nil {
 		panic("err should not be nill")
 	}
 
 	var null Int
+
 	err = json.Unmarshal(nullJSON, &null)
 	maybePanic(err)
 	assertNullInt(t, null, "null json")
 
 	var badType Int
+
 	err = json.Unmarshal(boolJSON, &badType)
 	if err == nil {
 		panic("err should not be nil")
 	}
+
 	assertNullInt(t, badType, "wrong type json")
 
 	var invalid Int
+
 	err = invalid.UnmarshalJSON(invalidJSON)
+
 	var syntaxError *json.SyntaxError
 	if !errors.As(err, &syntaxError) {
 		t.Errorf("expected wrapped json.SyntaxError, not %T", err)
 	}
+
 	assertNullInt(t, invalid, "invalid json")
 }
 
 func TestUnmarshalNonIntegerNumber(t *testing.T) {
 	var i Int
+
 	err := json.Unmarshal(floatJSON, &i)
 	if err == nil {
 		panic("err should be present; non-integer number coerced to int")
@@ -91,11 +102,13 @@ func TestUnmarshalInt64Overflow(t *testing.T) {
 
 	// Max int64 should decode successfully
 	var i Int
+
 	err := json.Unmarshal([]byte(strconv.FormatUint(int64Overflow, 10)), &i)
 	maybePanic(err)
 
 	// Attempt to overflow
 	int64Overflow++
+
 	err = json.Unmarshal([]byte(strconv.FormatUint(int64Overflow, 10)), &i)
 	if err == nil {
 		panic("err should be present; decoded value overflows int64")
@@ -104,21 +117,25 @@ func TestUnmarshalInt64Overflow(t *testing.T) {
 
 func TestTextUnmarshalInt(t *testing.T) {
 	var i Int
+
 	err := i.UnmarshalText([]byte("12345"))
 	maybePanic(err)
 	assertInt(t, i, "UnmarshalText() int")
 
 	var blank Int
+
 	err = blank.UnmarshalText([]byte(""))
 	maybePanic(err)
 	assertNullInt(t, blank, "UnmarshalText() empty int")
 
 	var null Int
+
 	err = null.UnmarshalText([]byte("null"))
 	maybePanic(err)
 	assertNullInt(t, null, `UnmarshalText() "null"`)
 
 	var invalid Int
+
 	err = invalid.UnmarshalText([]byte("hello world"))
 	if err == nil {
 		panic("expected error")
@@ -153,12 +170,14 @@ func TestMarshalIntText(t *testing.T) {
 
 func TestIntPointer(t *testing.T) {
 	i := IntFrom(12345)
+
 	ptr := i.Ptr()
 	if *ptr != 12345 {
 		t.Errorf("bad %s int: %#v ≠ %d\n", "pointer", ptr, 12345)
 	}
 
 	null := NewInt(0, false)
+
 	ptr = null.Ptr()
 	if ptr != nil {
 		t.Errorf("bad %s int: %#v ≠ %s\n", "nil pointer", ptr, "nil")
@@ -191,11 +210,13 @@ func TestIntSetValid(t *testing.T) {
 
 func TestIntScan(t *testing.T) {
 	var i Int
+
 	err := i.Scan(12345)
 	maybePanic(err)
 	assertInt(t, i, "scanned int")
 
 	var null Int
+
 	err = null.Scan(nil)
 	maybePanic(err)
 	assertNullInt(t, null, "scanned null")
@@ -243,6 +264,7 @@ func assertInt(t *testing.T, i Int, from string) {
 	if i.Int64 != 12345 {
 		t.Errorf("bad %s int: %d ≠ %d\n", from, i.Int64, 12345)
 	}
+
 	if !i.Valid {
 		t.Error(from, "is invalid, but should be valid")
 	}
@@ -256,6 +278,7 @@ func assertNullInt(t *testing.T, i Int, from string) {
 
 func assertIntEqualIsTrue(t *testing.T, a, b Int) {
 	t.Helper()
+
 	if !a.Equal(b) {
 		t.Errorf("Equal() of Int{%v, Valid:%t} and Int{%v, Valid:%t} should return true", a.Int64, a.Valid, b.Int64, b.Valid)
 	}
@@ -263,6 +286,7 @@ func assertIntEqualIsTrue(t *testing.T, a, b Int) {
 
 func assertIntEqualIsFalse(t *testing.T, a, b Int) {
 	t.Helper()
+
 	if a.Equal(b) {
 		t.Errorf("Equal() of Int{%v, Valid:%t} and Int{%v, Valid:%t} should return false", a.Int64, a.Valid, b.Int64, b.Valid)
 	}

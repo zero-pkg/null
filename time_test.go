@@ -23,47 +23,58 @@ var (
 
 func TestUnmarshalTimeJSON(t *testing.T) {
 	var ti Time
+
 	err := json.Unmarshal(timeJSON, &ti)
 	maybePanic(err)
 	assertTime(t, ti, "UnmarshalJSON() json")
 
 	var null Time
+
 	err = json.Unmarshal(nullTimeJSON, &null)
 	maybePanic(err)
 	assertNullTime(t, null, "null time json")
 
 	var fromObject Time
+
 	err = json.Unmarshal(timeObject, &fromObject)
 	if err == nil {
 		panic("expected error")
 	}
 
 	var nullFromObj Time
+
 	err = json.Unmarshal(nullObject, &nullFromObj)
 	if err == nil {
 		panic("expected error")
 	}
 
 	var invalid Time
+
 	err = invalid.UnmarshalJSON(invalidJSON)
+
 	var syntaxError *json.SyntaxError
 	if !errors.As(err, &syntaxError) {
 		t.Errorf("expected wrapped json.SyntaxError, not %T", err)
 	}
+
 	assertNullTime(t, invalid, "invalid from object json")
 
 	var bad Time
+
 	err = json.Unmarshal(badObject, &bad)
 	if err == nil {
 		t.Errorf("expected error: bad object")
 	}
+
 	assertNullTime(t, bad, "bad from object json")
 
 	var wrongType Time
+
 	err = json.Unmarshal(intJSON, &wrongType)
 	if err == nil {
 		t.Errorf("expected error: wrong type JSON")
 	}
+
 	assertNullTime(t, wrongType, "wrong type object json")
 }
 
@@ -74,11 +85,13 @@ func TestUnmarshalTimeText(t *testing.T) {
 	assertJSONEquals(t, txt, timeString1, "marshal text")
 
 	var unmarshal Time
+
 	err = unmarshal.UnmarshalText(txt)
 	maybePanic(err)
 	assertTime(t, unmarshal, "unmarshal text")
 
 	var null Time
+
 	err = null.UnmarshalText(nullJSON)
 	maybePanic(err)
 	assertNullTime(t, null, "unmarshal null text")
@@ -87,10 +100,12 @@ func TestUnmarshalTimeText(t *testing.T) {
 	assertJSONEquals(t, txt, "", "marshal null text")
 
 	var invalid Time
+
 	err = invalid.UnmarshalText([]byte("hello world"))
 	if err == nil {
 		t.Error("expected error")
 	}
+
 	assertNullTime(t, invalid, "bad string")
 }
 
@@ -121,6 +136,7 @@ func TestTimeFromPtr(t *testing.T) {
 
 func TestTimeSetValid(t *testing.T) {
 	var ti time.Time
+
 	change := NewTime(ti, false)
 	assertNullTime(t, change, "SetValid()")
 	change.SetValid(timeValue1)
@@ -129,13 +145,16 @@ func TestTimeSetValid(t *testing.T) {
 
 func TestTimePointer(t *testing.T) {
 	ti := TimeFrom(timeValue1)
+
 	ptr := ti.Ptr()
 	if *ptr != timeValue1 {
 		t.Errorf("bad %s time: %#v ≠ %v\n", "pointer", ptr, timeValue1)
 	}
 
 	var nt time.Time
+
 	null := NewTime(nt, false)
+
 	ptr = null.Ptr()
 	if ptr != nil {
 		t.Errorf("bad %s time: %#v ≠ %s\n", "nil pointer", ptr, "nil")
@@ -144,22 +163,27 @@ func TestTimePointer(t *testing.T) {
 
 func TestTimeScanValue(t *testing.T) {
 	var ti Time
+
 	err := ti.Scan(timeValue1)
 	maybePanic(err)
 	assertTime(t, ti, "scanned time")
+
 	if v, err := ti.Value(); v != timeValue1 || err != nil {
 		t.Error("bad value or err:", v, err)
 	}
 
 	var null Time
+
 	err = null.Scan(nil)
 	maybePanic(err)
 	assertNullTime(t, null, "scanned null")
+
 	if v, err := null.Value(); v != nil || err != nil {
 		t.Error("bad value or err:", v, err)
 	}
 
 	var wrong Time
+
 	err = wrong.Scan(int64(42))
 	if err == nil {
 		t.Error("expected error")
@@ -173,6 +197,7 @@ func TestTimeValueOrZero(t *testing.T) {
 	}
 
 	invalid := valid
+
 	invalid.Valid = false
 	if !invalid.ValueOrZero().IsZero() {
 		t.Error("unexpected ValueOrZero", invalid.ValueOrZero())
@@ -260,6 +285,7 @@ func assertTime(t *testing.T, ti Time, from string) {
 	if ti.Time != timeValue1 {
 		t.Errorf("bad %v time: %v ≠ %v\n", from, ti.Time, timeValue1)
 	}
+
 	if !ti.Valid {
 		t.Error(from, "is invalid, but should be valid")
 	}
@@ -273,6 +299,7 @@ func assertNullTime(t *testing.T, ti Time, from string) {
 
 func assertTimeEqualIsTrue(t *testing.T, a, b Time) {
 	t.Helper()
+
 	if !a.Equal(b) {
 		t.Errorf("Equal() of Time{%v, Valid:%t} and Time{%v, Valid:%t} should return true", a.Time, a.Valid, b.Time, b.Valid)
 	}
@@ -280,6 +307,7 @@ func assertTimeEqualIsTrue(t *testing.T, a, b Time) {
 
 func assertTimeEqualIsFalse(t *testing.T, a, b Time) {
 	t.Helper()
+
 	if a.Equal(b) {
 		t.Errorf("Equal() of Time{%v, Valid:%t} and Time{%v, Valid:%t} should return false", a.Time, a.Valid, b.Time, b.Valid)
 	}
@@ -287,6 +315,7 @@ func assertTimeEqualIsFalse(t *testing.T, a, b Time) {
 
 func assertTimeExactEqualIsTrue(t *testing.T, a, b Time) {
 	t.Helper()
+
 	if !a.ExactEqual(b) {
 		t.Errorf("ExactEqual() of Time{%v, Valid:%t} and Time{%v, Valid:%t} should return true", a.Time, a.Valid, b.Time, b.Valid)
 	}
@@ -294,6 +323,7 @@ func assertTimeExactEqualIsTrue(t *testing.T, a, b Time) {
 
 func assertTimeExactEqualIsFalse(t *testing.T, a, b Time) {
 	t.Helper()
+
 	if a.ExactEqual(b) {
 		t.Errorf("ExactEqual() of Time{%v, Valid:%t} and Time{%v, Valid:%t} should return false", a.Time, a.Valid, b.Time, b.Valid)
 	}
